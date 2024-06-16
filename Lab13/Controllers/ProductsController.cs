@@ -58,16 +58,14 @@ namespace Lab13.Controllers
 
             // _context.Entry(product).State = EntityState.Modified;
         // No mostrar el campo Activo para el metodo Actualizar Producto 
-            var existingCustomer = await _context.Customers.FindAsync(id);
-            if (existingCustomer == null)
+            var existingProduct  = await _context.Customers.FindAsync(id);
+            if (existingProduct == null)
             {
                 return NotFound();
             }
         
-            existingCustomer.FirstName = product.FirstName;
-            existingCustomer.LastName = product.LastName;
-            existingCustomer.DocumentNumber = product.DocumentNumber;
-
+            existingProduct.Name = product.FirstName;
+            existingProduct.Price = product.LastName;
             
             try
             {
