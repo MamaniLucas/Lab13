@@ -6,6 +6,6 @@
         public int ProductId { get; set; }
         public string Name { get; set; }
         public float Price { get; set; }
-        public bool activo { get; set; }
+        public bool activo { get; set; }  = true;
     }
 }
