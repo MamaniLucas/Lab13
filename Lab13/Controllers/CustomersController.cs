@@ -24,11 +24,8 @@ namespace Lab13.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
         {
-          if (_context.Customers == null)
-          {
-              return NotFound();
-          }
-            return await _context.Customers.ToListAsync();
+            var customers = await _context.Customers.Where(c => c.activo).ToListAsync();
+            return customers; //Listar solo los campos con activo 1 
         }
 
         // GET: api/Customers/5
@@ -59,7 +56,15 @@ namespace Lab13.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
+            var existingCustomer = await _context.Customers.FindAsync(id);
+            if (existingCustomer == null)
+            {
+                return NotFound();
+            }
+        
+            existingCustomer.FirstName = customer.FirstName;
+            existingCustomer.LastName = customer.LastName;
+            existingCustomer.DocumentNumber = customer.DocumentNumber;
 
             try
             {
@@ -99,18 +104,16 @@ namespace Lab13.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            if (_context.Customers == null)
-            {
-                return NotFound();
-            }
+            
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
 
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+            //_context.Customers.Remove(customer);
+            customer.activo = false; // Marcar cliente como inactivo
+            await _context.SaveChangesAsync(); // Guardar cambios en la base de datos
 
             return NoContent();
         }
