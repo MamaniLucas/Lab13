@@ -24,11 +24,8 @@ namespace Lab13.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-          if (_context.Products == null)
-          {
-              return NotFound();
-          }
-            return await _context.Products.ToListAsync();
+           var products = await _context.Products.Where(c => c.activo).ToListAsync();
+            return products;
         }
 
         // GET: api/Products/5
@@ -59,8 +56,19 @@ namespace Lab13.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(product).State = EntityState.Modified;
+            // _context.Entry(product).State = EntityState.Modified;
+        // No mostrar el campo Activo para el metodo Actualizar Producto 
+            var existingCustomer = await _context.Customers.FindAsync(id);
+            if (existingCustomer == null)
+            {
+                return NotFound();
+            }
+        
+            existingCustomer.FirstName = product.FirstName;
+            existingCustomer.LastName = product.LastName;
+            existingCustomer.DocumentNumber = product.DocumentNumber;
 
+            
             try
             {
                 await _context.SaveChangesAsync();
@@ -99,22 +107,22 @@ namespace Lab13.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (_context.Products == null)
-            {
-                return NotFound();
-            }
+             
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _context.Products.Remove(product);
+           //_context.Products.Remove(product);
+
+            product.activo = false; //Marcar producto como inactivo
+            
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
+//evaluar la necesidad de este metodo 
         private bool ProductExists(int id)
         {
             return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
